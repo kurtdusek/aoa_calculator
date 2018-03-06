@@ -1,0 +1,112 @@
+.aoa_calculator{
+    vertical-align: top;
+    margin-bottom: 5px;
+}
+
+#title{
+    color: #e90089;
+    font-size: 1.2em;
+}
+#subTitle{
+    font-size: 1.1em;
+    margin-bottom: 15px;
+}
+.sectionName{
+    font-weight: bold;
+    vertical-align: top;
+    display: inline-block;
+    width: 100px;
+}
+.sectionAnswer{
+    display: inline-block;
+}
+.sectionName::first-letter{
+    color: #e90089;
+}
+
+.sectionText{
+    padding: 0px 10px;
+    display: inline-block;
+    width: 150px;
+    vertical-align: top;
+}
+
+.sectionSubText{
+    display: block;
+    font-size: .8em;
+}
+
+#uploadPictureButton{
+    display: inline-block;
+    padding: 3px 10px;
+    background-color: #e90089;
+    color: white;
+    font-size: .9em;
+    cursor: pointer;
+}
+#goalPhoto{
+    -webkit-appearance:none;
+    position:absolute;
+    top:0; left:0;
+    opacity:0;
+}
+#jarGoalImage img{
+    max-height: 100%;
+    max-width: 100%;
+}
+#jarLabel{
+    width: 450px;
+    text-align: center;
+    display: inline-block;
+}
+#jarGoalName{
+    font-size: 1.4em;
+}
+
+#jarContainer{
+    border: 1px solid black;
+}
+
+input[type="text"], input[type="number"]{
+    border: 1px solid #E90089;
+    padding: 4px;
+}
+
+.printTitle{
+    font-size: 1.1em;
+    text-align: center;
+}
+#thermoLabel{
+    display: inline-block;
+    margin-left: 30px;
+}
+#thermoSavingTime{
+    text-transform: capitalize;
+    margin-bottom: 5px;
+    margin-left: 8px;
+    display: inline-block;
+}
+#thermoSavings{
+    padding-left: 60px;
+}
+#thermometerContainer{
+    border: 1px solid black;
+    display: inline-block;
+    background-image: url('./thermometer.png');
+    background-position: center center;
+    background-repeat: no-repeat;
+    min-height: 300px;
+    width: 165px;
+    padding: 10px;
+}
+.savingGoal{
+    margin-bottom: 38px;
+}
+.savingInterval{
+    padding-left: 15px;
+    display: inline-block;
+    width: 35px;
+}
+.savingAmount{
+    margin-left: 55px;
+}
