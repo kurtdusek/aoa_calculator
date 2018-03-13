@@ -44,23 +44,45 @@
     font-size: .9em;
     cursor: pointer;
 }
+
+#printLabelButton{
+    display: block;
+    padding: 3px 10px;
+    background-color: #e90089;
+    color: white;
+    font-size: .9em;
+    cursor: pointer;
+    width: fit-content;
+    margin: 10px auto;
+}
+#goalTitle{
+    text-align: center;
+    font-size: 1.4em;
+}
 #goalPhoto{
     -webkit-appearance:none;
     position:absolute;
     top:0; left:0;
     opacity:0;
 }
+#jarPanel, #thermoPanel{
+    display: inline-block;
+}
 #jarGoalImage img{
     max-height: 100%;
     max-width: 100%;
 }
-#jarLabel{
+#jarLabel, #printJarLabel{
     width: 450px;
     text-align: center;
     display: inline-block;
 }
-#jarGoalName{
+#jarGoalName, #thermoGoalName{
     font-size: 1.4em;
+}
+
+.jarGoalDate, .goalDate{
+    font-size: 1.3em;
 }
 
 #jarContainer{
@@ -76,37 +98,77 @@ input[type="text"], input[type="number"]{
     font-size: 1.1em;
     text-align: center;
 }
-#thermoLabel{
+#thermoLabel, #printThermoLabel{
     display: inline-block;
     margin-left: 30px;
 }
 #thermoSavingTime{
     text-transform: capitalize;
     margin-bottom: 5px;
-    margin-left: 8px;
     display: inline-block;
+    width: 50%;
 }
 #thermoSavings{
-    padding-left: 60px;
+    display: inline-block;
+    width: 50%;
 }
-#thermometerContainer{
+
+#thermoSavingImage img{
+    width: 100%;
+}
+#thermoInfo{
+    background-image: url('./thermometer.png');
+    background-position: center 35px;
+    background-repeat: no-repeat;
+    position: relative;
+    min-height: 370px;
+}
+.thermoDateLine{
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+.thermoContainer{
     border: 1px solid black;
     display: inline-block;
-    background-image: url('./thermometer.png');
-    background-position: center center;
-    background-repeat: no-repeat;
     min-height: 300px;
-    width: 165px;
+    width: 265px;
     padding: 10px;
+    text-align: center;
 }
 .savingGoal{
-    margin-bottom: 38px;
+    margin-bottom: 40px;
 }
 .savingInterval{
-    padding-left: 15px;
     display: inline-block;
-    width: 35px;
+    width: 50%;
 }
 .savingAmount{
-    margin-left: 55px;
+
+    display: inline-block;
+    width: 50%;
+}
+
+@media print {
+    * {-webkit-print-color-adjust:exact;}
+    .goalForm{
+        display: none;
+    }
+
+    #thermoLabel
+    {
+        display: none;
+    }
+    #printThermoLabel{
+        height: 9in;
+    }
+    #jarLabel{
+        display: none;
+    }
+    #printJarLabel{
+        width: 8.5in;
+    }
+    #printLabelButton{
+        display: none;
+    }
 }

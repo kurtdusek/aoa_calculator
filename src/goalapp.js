@@ -4,6 +4,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import axios from 'axios';
+import moment from 'moment';
 //import './index.css';
 
 export default class GoalApp extends React.Component{
@@ -13,9 +14,12 @@ export default class GoalApp extends React.Component{
             goalName: '',
             goalAmount: 0,
             savingAmount: 0,
-            savingTime: (''),
+            savingTime: ('week'),
             goalImage: (''),
-            savingGoals: {0: null, 1: null, 2: null, 3: null}
+            savingGoals: {0: null, 1: null, 2: null, 3: null},
+            goalDate: (''),
+            printLabel: false,
+            printThermo: false
         };
         this.updateGoalName = this.updateGoalName.bind(this);
         this.updateGoalAmount = this.updateGoalAmount.bind(this);
@@ -23,6 +27,8 @@ export default class GoalApp extends React.Component{
         this.updateSavingAmount = this.updateSavingAmount.bind(this);
         this.updateSavingTime = this.updateSavingTime.bind(this);
         this._calculateSavingGoals = this._calculateSavingGoals.bind(this);
+        this.printThermo = this.printThermo.bind(this);
+        this.printJarLabel = this.printJarLabel.bind(this);
     }
 
     updateGoalName(value){
@@ -31,18 +37,15 @@ export default class GoalApp extends React.Component{
 
     updateGoalAmount(value){
         //TODO: checks for NaN
-        this.setState({goalAmount: value});
-        this._calculateSavingGoals();
+        this.setState({goalAmount: value}, this._calculateSavingGoals());
     }
     updateSavingAmount(value)
     {
-        this.setState({savingAmount: value});
-        this._calculateSavingGoals();
+        this.setState({savingAmount: value}, this._calculateSavingGoals());
     }
     updateSavingTime(value)
     {
-        this.setState({savingTime: value});
-        this._calculateSavingGoals();
+        this.setState({savingTime: value}, this._calculateSavingGoals());
     }
     triggerUpload()
     {
@@ -67,8 +70,23 @@ export default class GoalApp extends React.Component{
     updateGoalImage(imgsrc){
         this.setState({goalImage: imgsrc});
     }
+    printThermo(){
+        this.setState({printLabel: false});
+        this.setState({printThermo: true}, function(){
+            window.print();
+        });
+
+    }
+    printJarLabel(){
+        this.setState({printLabel: true});
+        this.setState({printThermo: false}, function(){
+            window.print();
+        });
+    }
     _calculateSavingGoals(){
-        if (this.state.goalAmount == 0 || this.state.savingAmount == 0)
+        let defaultSavingGoals = {0: null, 1: null, 2: null, 3: null};
+        this.setState({savingGoals: defaultSavingGoals});
+        if (this.state.goalAmount === 0 || this.state.savingAmount === 0)
             return;
         let savingGoals = {};
         let savingTime = this.state.goalAmount/this.state.savingAmount;
@@ -82,6 +100,11 @@ export default class GoalApp extends React.Component{
             };
             i++;
         }
+        if (this.state.savingTime !== "")
+        {
+            let dateString = moment().add(savingTime, this.state.savingTime).format("MMMM D, YYYY");
+            this.setState({goalDate: dateString});
+        }
         this.setState({savingGoals: savingGoals}) ;
     }
     render(){
@@ -91,8 +114,13 @@ export default class GoalApp extends React.Component{
         const savingAmount = this.state.savingAmount;
         const savingTime = this.state.savingTime;
         const savingGoals = this.state.savingGoals;
+        const goalDate = this.state.goalDate;
+        const printThermo = this.state.printThermo;
+        const printLabel = this.state.printLabel;
+
         return (
             <div>
+                <div className="goalForm">
                 <h2>MAKE YOUR OWN SMART GOAL LABEL</h2>
                 <div id="title">What is a SMART Goal?</div>
                 <div id="subTitle">A SMART Goal is...</div>
@@ -101,8 +129,14 @@ export default class GoalApp extends React.Component{
                 <Achievable />
                 <Relevant />
                 <Timebased updateSavingAmount={this.updateSavingAmount} updateSavingTime={this.updateSavingTime}/>
-                <Jarlabel goalName={goalName} goalAmount={goalAmount} goalImage={goalImage} savingAmount={savingAmount} savingTime={savingTime}/>
-                <Savingsthermometer savingGoals={savingGoals} savingTime={savingTime}/>
+                </div>
+                <Jarlabel goalName={goalName} goalAmount={goalAmount} goalImage={goalImage}
+                          savingAmount={savingAmount} savingTime={savingTime} goalDate={goalDate}
+                          printJarLabel={printLabel} printButton={this.printJarLabel}
+                />
+                <Savingsthermometer savingGoals={savingGoals} goalName={goalName} savingTime={savingTime}
+                                    goalImage={goalImage} goalDate={goalDate} printButton={this.printThermo}
+                                    printThermo={printThermo}/>
             </div>
         );
     }
@@ -232,7 +266,7 @@ class Timebased extends React.Component{
 
                 <span className="sectionAnswer">I can save<br />
                 <input type="number" id="savingAmount" onChange={this.handleChange}/><br />
-                <input id="week" type="radio" name="savingTime" value="week" onChange={this.handleTimeChange}/> <span className="sectionAnswer">Weekly</span><br />
+                <input id="week" type="radio" name="savingTime" checked="checked" value="week" onChange={this.handleTimeChange}/> <span className="sectionAnswer">Weekly</span><br />
                 <input id="month" type="radio" name="savingTime" value="month" onChange={this.handleTimeChange} /><span className="sectionAnswer">Monthly</span>
                     </span>
             </div>
@@ -243,6 +277,7 @@ class Timebased extends React.Component{
 class Jarlabel extends React.Component {
     constructor(props){
         super(props);
+        this.printJarLabel = this.printJarLabel.bind(this);
     }
     getGoalImage(){
         return {'__html': this.props.goalImage}
@@ -259,6 +294,17 @@ class Jarlabel extends React.Component {
         else
             return (` ($${parseFloat(Math.round(parseFloat(this.props.savingAmount)*100)/100).toFixed(2)} per ${this.props.savingTime})`);
     }
+    printJarLabel(e){
+        this.props.printButton(e);
+    }
+    hideJarLabel()
+    {
+        if (this.props.printJarLabel === true)
+            return "printJarLabel";
+
+        else
+            return "jarLabel";
+    }
     render(){
         if (this.props.goalName == '' && this.props.goalImage == '')
         {
@@ -267,16 +313,19 @@ class Jarlabel extends React.Component {
         else
         {
             return (
-                <div className="aoa_calculator" id="jarLabel">
-                    <div className="printTitle">Jar Goal Label</div>
-                    <div id="jarContainer">
-                        <div id="jarGoalImage" dangerouslySetInnerHTML={this.getGoalImage()}></div>
-                        <div id="jarGoalName">{this.props.goalName}</div>
-                        <div>
+                <div className="aoa_calculator" id="jarPanel">
+                    <div id={this.hideJarLabel()}>
+                        <div id="jarContainer">
+                            <div id="jarGoalName">{this.props.goalName}</div>
                             <span id="jarGoalAmount">{this.getGoalAmount()}</span>
                             <span id="jarSavingAmount">{this.getSavingAmount()}</span>
+                            <div id="jarGoalImage" dangerouslySetInnerHTML={this.getGoalImage()}></div>
+                            <div>
+                                I will reach my goal on <div className="jarGoalDate">{this.props.goalDate}</div>
+                            </div>
                         </div>
                     </div>
+                    <div id="printLabelButton" onClick={this.printJarLabel}>print</div>
                 </div>
             );
         }
@@ -287,15 +336,34 @@ class Savingsthermometer extends React.Component{
     constructor(props)
     {
         super(props);
+        this.printThermo = this.printThermo.bind(this);
+        this.hideThermo = this.hideThermo.bind(this);
     }
+    printThermo(e)
+    {
+        this.props.printButton(e);
+    }
+    hideThermo()
+    {
+        if (this.props.printThermo === true)
+            return "printThermoLabel";
 
+        else
+            return "thermoLabel";
+    }
+    getGoalImage(){
+        return {'__html': this.props.goalImage}
+    }
     render(){
         if (this.props.savingGoals[1] != null)
         {
             return (
-                <div className="aoa_calculator" id="thermoLabel">
-                    <div className="printTitle">Savings Thermometer</div>
-                    <span id="thermometerContainer">
+                <div className="aoa_calculator" id="thermoPanel">
+                    <span className="thermoContainer" id={this.hideThermo()}>
+                        <div id="goalTitle">GOAL:</div>
+                        <div id="thermoSavingImage" dangerouslySetInnerHTML={this.getGoalImage()}></div>
+                        <div id="thermoInfo">
+                            <div id="thermoGoalName">{this.props.goalName}</div>
                         <span id="thermoSavingTime">{this.props.savingTime}</span>
                         <span id="thermoSavings">Savings</span>
                         <div className="savingGoal">
@@ -314,7 +382,15 @@ class Savingsthermometer extends React.Component{
                             <span className="savingInterval">{this.props.savingGoals[1].savingInterval}</span>
                             <span className="savingAmount">${this.props.savingGoals[1].savingAmount}</span>
                         </div>
+                            <div className="thermoDateLine">
+                            I will reach my goal on
+                                <div className="goalDate">
+                                    {this.props.goalDate}
+                                </div>
+                            </div>
+                        </div>
                     </span>
+                    <div id="printLabelButton" onClick={this.printThermo}>print</div>
                 </div>
             );
         }
